@@ -1,4 +1,4 @@
-import { DatabaseReference, DataSnapshot, off, onValue } from 'firebase/database'
+import type firebase from 'firebase/compat'
 import { Ref, ref } from 'vue-demi'
 import { tryOnScopeDispose } from '@vueuse/shared'
 
@@ -13,7 +13,7 @@ export interface RTDBOptions {
  * @param options
  */
 export function useRTDB<T = any>(
-  docRef: DatabaseReference,
+  docRef: firebase.database.Reference,
   options: RTDBOptions = {},
 ) {
   const {
@@ -21,15 +21,15 @@ export function useRTDB<T = any>(
   } = options
   const data = ref(undefined) as Ref<T | undefined>
 
-  function update(snapshot: DataSnapshot) {
+  function update(snapshot: firebase.database.DataSnapshot) {
     data.value = snapshot.val()
   }
 
-  onValue(docRef, update)
+  docRef.on('value', update)
 
   if (autoDispose) {
     tryOnScopeDispose(() => {
-      off(docRef, 'value', update)
+      docRef.off('value', update)
     })
   }
   return data

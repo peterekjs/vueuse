@@ -11,16 +11,14 @@ can easily react to changes in the users' authentication status.
 
 ```html
 <script setup lang="ts">
-import { initializeApp } from 'firebase/app'
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
-import { useAuth } from '@vueuse/firebase/useAuth'
+import firebase from 'firebase/compat'
+import { useAuth } from '@vueuse/firebase/compat/useAuth'
 
-const app = initializeApp({ projectId: 'MY PROJECT ID' })
-const auth = getAuth(app)
+const { GoogleAuthProvider } = firebase.auth
 
 const { isAuthenticated, user } = useAuth(firebase.auth)
 
-const signIn = () => signInWithPopup(new GoogleAuthProvider())
+const signIn = () => firebase.auth().signInWithPopup(new GoogleAuthProvider())
 </script>
 
 <template>

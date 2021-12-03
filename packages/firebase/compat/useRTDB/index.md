@@ -8,26 +8,23 @@ Reactive [Firebase Realtime Database](https://firebase.google.com/docs/database)
 
 ## Usage
 
-```ts
-import { initializeApp } from 'firebase/app'
-import { getDatabase } from 'firebase/database'
+```js
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/database'
+import { useRTDB } from '@vueuse/firebase/compat/useRTDB'
 
-const app = initializeApp({ databaseURL: 'https://MY-DATABASE.firebaseio.com' })
-const db = getDatabase(app)
-```
+const db = firebase
+  .initializeApp({ databaseURL: 'https://MY-DATABASE.firebaseio.com' })
+  .database()
 
-```ts
 // in setup()
-import { useRTDB } from '@vueuse/firebase/useRTDB'
-import { ref } from 'firebase/database'
-
-const todos = useRTDB(ref(db, 'todos'))
+const todos = useRTDB(db.ref('todos'))
 ```
 
 You can reuse the db reference by passing `autoDispose: false`
 
 ```ts
-const todos = useRTDB(ref(db, 'todos'), { autoDispose: false })
+const todos = useRTDB(db.collection('todos'), { autoDispose: false })
 ```
 
 or use `createGlobalState` from the core package
@@ -36,10 +33,9 @@ or use `createGlobalState` from the core package
 // store.js
 import { createGlobalState } from '@vueuse/core'
 import { useRTDB } from '@vueuse/firebase/useRTDB'
-import { ref } from 'firebase/database'
 
 export const useTodos = createGlobalState(
-  () => useRTDB(ref(db, 'todos')),
+  () => useRTDB(db.ref('todos')),
 )
 ```
 

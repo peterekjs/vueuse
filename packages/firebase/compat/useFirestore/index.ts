@@ -1,4 +1,4 @@
-import { DocumentData, DocumentReference, DocumentSnapshot, onSnapshot, Query, QueryDocumentSnapshot } from 'firebase/firestore'
+import type firebase from 'firebase/compat'
 import { ref, Ref } from 'vue-demi'
 import { isDef, tryOnScopeDispose } from '@vueuse/shared'
 
@@ -8,11 +8,11 @@ export interface FirestoreOptions {
 }
 
 export type FirebaseDocRef<T> =
-  Query<T> |
-  DocumentReference<T>
+  firebase.firestore.Query<T> |
+  firebase.firestore.DocumentReference<T>
 
 function getData<T>(
-  docRef: DocumentSnapshot<T> | QueryDocumentSnapshot<T>,
+  docRef: firebase.firestore.DocumentSnapshot<T> | firebase.firestore.QueryDocumentSnapshot<T>,
 ) {
   const data = docRef.data()
 
@@ -26,29 +26,29 @@ function getData<T>(
   return data
 }
 
-function isDocumentReference<T>(docRef: any): docRef is DocumentReference<T> {
+function isDocumentReference<T>(docRef: any): docRef is firebase.firestore.DocumentReference<T> {
   return (docRef.path?.match(/\//g) || []).length % 2 !== 0
 }
 
-export function useFirestore<T extends DocumentData> (
-  docRef: DocumentReference<T>,
+export function useFirestore<T extends firebase.firestore.DocumentData> (
+  docRef: firebase.firestore.DocumentReference<T>,
   initialValue: T,
   options?: FirestoreOptions
 ): Ref<T | null>
-export function useFirestore<T extends DocumentData> (
-  docRef: Query<T>,
+export function useFirestore<T extends firebase.firestore.DocumentData> (
+  docRef: firebase.firestore.Query<T>,
   initialValue: T[],
   options?: FirestoreOptions
 ): Ref<T[]>
 
 // nullable initial values
-export function useFirestore<T extends DocumentData> (
-  docRef: DocumentReference<T>,
+export function useFirestore<T extends firebase.firestore.DocumentData> (
+  docRef: firebase.firestore.DocumentReference<T>,
   initialValue?: T | undefined,
   options?: FirestoreOptions,
 ): Ref<T | undefined | null>
-export function useFirestore<T extends DocumentData> (
-  docRef: Query<T>,
+export function useFirestore<T extends firebase.firestore.DocumentData> (
+  docRef: firebase.firestore.Query<T>,
   initialValue?: T[],
   options?: FirestoreOptions
 ): Ref<T[] | undefined>
@@ -62,7 +62,7 @@ export function useFirestore<T extends DocumentData> (
  * @param initialValue
  * @param options
  */
-export function useFirestore<T extends DocumentData>(
+export function useFirestore<T extends firebase.firestore.DocumentData>(
   docRef: FirebaseDocRef<T>,
   initialValue: any = undefined,
   options: FirestoreOptions = {},
@@ -76,7 +76,7 @@ export function useFirestore<T extends DocumentData>(
   if (isDocumentReference<T>(docRef)) {
     const data = ref(initialValue) as Ref<T|null|undefined>
 
-    const close = onSnapshot(docRef, (snapshot) => {
+    const close = docRef.onSnapshot((snapshot) => {
       data.value = getData(snapshot) || null
     }, errorHandler)
 
@@ -89,7 +89,7 @@ export function useFirestore<T extends DocumentData>(
   else {
     const data = ref(initialValue) as Ref<T[] | undefined>
 
-    const close = onSnapshot(docRef, (snapshot) => {
+    const close = docRef.onSnapshot((snapshot) => {
       data.value = snapshot.docs.map(getData).filter(isDef)
     }, errorHandler)
 

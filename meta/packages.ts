@@ -83,12 +83,15 @@ export const packages: PackageManifest[] = [
     addon: true,
     submodules: true,
     external: [
-      'firebase',
-      'firebase/app',
+      'firebase/auth',
+      'firebase/database',
+      'firebase/firestore',
+      'firebase/compat',
+      'firebase/compat/app',
     ],
     globals: {
-      'firebase': 'firebase',
-      'firebase/app': 'firebase',
+      'firebase/compat': 'firebase',
+      'firebase/compat/app': 'firebase',
     },
   },
   {

@@ -8,18 +8,17 @@ Reactive [Firestore](https://firebase.google.com/docs/firestore) binding. Making
 
 ## Usage
 
-```js {8,11}
-import { initializeApp } from 'firebase/app'
-import { collection, doc, getFirestore } from 'firebase/firestore'
-import { useFirestore } from '@vueuse/firebase/useFirestore'
+```js {7,9}
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/firestore'
+import { useFirestore } from '@vueuse/firebase/compat/useFirestore'
 
-const app = initializeApp({ projectId: 'MY PROJECT ID' })
-const db = getFirestore(app)
+const db = firebase.initializeApp({ projectId: 'MY PROJECT ID' }).firestore()
 
-const todos = useFirestore(collection(db, 'todos'))
+const todos = useFirestore(db.collection('todos'))
 
 // or for doc reference
-const user = useFirestore(doc(db, 'my-user-id'))
+const user = useFirestore(db.collection('users').doc('my-user-id'))
 ```
 
 ## Share across instances
@@ -27,7 +26,7 @@ const user = useFirestore(doc(db, 'my-user-id'))
 You can reuse the db reference by passing `autoDispose: false`
 
 ```ts
-const todos = useFirestore(collection(db, 'todos'), undefined, { autoDispose: false })
+const todos = useFirestore(db.collection('todos'), undefined, { autoDispose: false })
 ```
 
 or use `createGlobalState` from the core package
@@ -36,10 +35,9 @@ or use `createGlobalState` from the core package
 // store.js
 import { createGlobalState } from '@vueuse/core'
 import { useFirestore } from '@vueuse/firebase/useFirestore'
-import { collection } from 'firebase/firestore'
 
 export const useTodos = createGlobalState(
-  () => useFirestore(collection(db, 'todos')),
+  () => useFirestore(db.collection('todos')),
 )
 ```
 
